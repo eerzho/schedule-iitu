@@ -11,23 +11,22 @@
         echo mysqli_connect_error();
         exit();
     }
-    if (isset($_POST['name'])) {
-        mysqli_query($connection, "SELECT name FROM chair WHERE name = '$_POST[name]'");
-        if (mysqli_affected_rows($connection)< 1) {
-            $query ="INSERT INTO chair VALUES(NULL, '$_POST[name]')";
-            $result = mysqli_query($connection, $query);
-            $message = true;
+    if (isset($_POST['course'])) {
+        if($_POST['course'] == 1) {
+            header('Location: scheduleCourse1');
         }
-        else {
-            $message = false;
+        if($_POST['course'] == 2) {
+            header('Location: scheduleCourse2');
         }
-    }
-    if (isset($_POST['id'])) {
-        $query ="DELETE FROM chair WHERE id = '$_POST[id]'";
-        $result = mysqli_query($connection, $query);
+        if($_POST['course'] == 3) {
+            header('Location: scheduleCourse3');
+        }
+        if($_POST['course'] == 4) {
+            header('Location: scheduleCourse4');
+        }
     }
     ?>
-	<title>Schedule - Add Chair</title>
+	<title>Schedule - Add Schedule</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
@@ -52,6 +51,7 @@
 	<link rel="stylesheet" type="text/css" href="loginPageStatic/css/util.css">
 	<link rel="stylesheet" type="text/css" href="loginPageStatic/css/main.css">
 <!--===============================================================================================-->
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
 </head>
 <body>
 	<div class="limiter">
@@ -59,28 +59,22 @@
 			<div class="wrap-login100 p-t-50 p-b-90">
 				<form class="login100-form validate-form flex-sb flex-w" method="post">
 					<span class="login100-form-title p-b-51">
-                        Add Chair
-                        <br>
-                        <?php
-                        if(isset($message)) {
-                            if ($message) {
-                                echo('<span style = "color: green">success</span>');
-                            }
-                            else {
-                                echo('<span style = "color: red">error</span>');
-                            }
-                        }
-                        ?>
+                        Course
 					</span>
-
-					<div class="wrap-input100 validate-input m-b-16" data-validate = "Chair name is required">
-						<input class="input100" type="text" name="name" placeholder="Chair name">
+                    <div class="wrap-input100 validate-input m-b-16" data-validate = "Course is required">
+						<select class="input100" type="text" name="course" placeholder="Course name">
+                            <option selected disabled value = "NULL">Select course</option>
+                            <option value = "1">1</option>
+                            <option value = "2">2</option>
+                            <option value = "3">3</option>
+                            <option value = "4">4</option>
+                        </select>
 						<span class="focus-input100"></span>
 					</div>
 
 					<div class="container-login100-form-btn m-t-17">
 						<button class="login100-form-btn">
-							Add
+							Select Course
 						</button>
 					</div>
                     <div class="container-login100-form-btn m-t-17">
@@ -90,46 +84,6 @@
 			</div>
 		</div>
 	</div>
-    <div class="row">
-        <div class="col-sm-12">
-            <table cellpadding="20" class="table table-stripped">
-                <thead>
-                <tr>
-                    <th>
-                        ID
-                    </th>
-                    <th>
-                        Name
-                    </th>
-                    <th>
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                <?php 
-                    $queryy = "SELECT * FROM chair";
-                    if ($result = $connection->query($queryy)) {
-                    while ($row = $result->fetch_assoc()) {
-                ?>
-                <tr>
-                    <td> <?php echo($row['id']); ?> </td>
-                    <td> <?php echo($row['name']);?> </td>
-                    <td> 
-                        <form action = "" method="post">
-                            <?php
-                                echo('<input type = "hidden" name = "id" value = "'.$row['id'].'">');
-                            ?>
-                            <button>
-                                Delete
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                    <?php }} ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
 	<div id="dropDownSelect1"></div>
 <!--===============================================================================================-->
 	<script src="loginPageStatic/vendor/jquery/jquery-3.2.1.min.js"></script>

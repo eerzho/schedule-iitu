@@ -12,9 +12,9 @@
         exit();
     }
     if (isset($_POST['name'])) {
-        mysqli_query($connection, "SELECT name FROM chair WHERE name = '$_POST[name]'");
+        mysqli_query($connection, "SELECT name FROM specialty WHERE name = '$_POST[name]'");
         if (mysqli_affected_rows($connection)< 1) {
-            $query ="INSERT INTO chair VALUES(NULL, '$_POST[name]')";
+            $query ="INSERT INTO specialty VALUES(NULL, '$_POST[name]')";
             $result = mysqli_query($connection, $query);
             $message = true;
         }
@@ -23,11 +23,11 @@
         }
     }
     if (isset($_POST['id'])) {
-        $query ="DELETE FROM chair WHERE id = '$_POST[id]'";
+        $query ="DELETE FROM specialty WHERE id = '$_POST[id]'";
         $result = mysqli_query($connection, $query);
     }
     ?>
-	<title>Schedule - Add Chair</title>
+	<title>Schedule - Add Specialty</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
@@ -59,7 +59,7 @@
 			<div class="wrap-login100 p-t-50 p-b-90">
 				<form class="login100-form validate-form flex-sb flex-w" method="post">
 					<span class="login100-form-title p-b-51">
-                        Add Chair
+                        Add Specialty
                         <br>
                         <?php
                         if(isset($message)) {
@@ -73,8 +73,8 @@
                         ?>
 					</span>
 
-					<div class="wrap-input100 validate-input m-b-16" data-validate = "Chair name is required">
-						<input class="input100" type="text" name="name" placeholder="Chair name">
+					<div class="wrap-input100 validate-input m-b-16" data-validate = "Specialty name is required">
+						<input class="input100" type="text" name="name" placeholder="Specialty name">
 						<span class="focus-input100"></span>
 					</div>
 
@@ -107,7 +107,7 @@
                 </thead>
                 <tbody>
                 <?php 
-                    $queryy = "SELECT * FROM chair";
+                    $queryy = "SELECT * FROM specialty";
                     if ($result = $connection->query($queryy)) {
                     while ($row = $result->fetch_assoc()) {
                 ?>

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <?php
+    $showPress = false;
     if (!isset($_COOKIE['id'])) {
         header('Location: login');
     }
@@ -11,23 +12,28 @@
         echo mysqli_connect_error();
         exit();
     }
-    if (isset($_POST['name'])) {
-        mysqli_query($connection, "SELECT name FROM chair WHERE name = '$_POST[name]'");
+    if (isset($_POST['name']) && isset($_POST['surName']) && isset($_POST['middleName']) && isset($_POST['chairId'])) {
+        mysqli_query($connection, "SELECT name FROM teacher WHERE name = '$_POST[name]' AND surName = '$_POST[surName]' AND middleName = '$_POST[middleName]'");
         if (mysqli_affected_rows($connection)< 1) {
-            $query ="INSERT INTO chair VALUES(NULL, '$_POST[name]')";
+            $query ="INSERT INTO teacher VALUES(NULL, '$_POST[name]', '$_POST[surName]', '$_POST[middleName]', '$_POST[chairId]')";
             $result = mysqli_query($connection, $query);
-            $message = true;
+            if ($result) {
+                $message = true;
+            }
+            else {
+                $message = false;
+            }
         }
         else {
             $message = false;
         }
     }
-    if (isset($_POST['id'])) {
-        $query ="DELETE FROM chair WHERE id = '$_POST[id]'";
+    if (isset($_POST['deleteTeacher'])) {
+        $query ="DELETE FROM teacher WHERE id = '$_POST[deleteTeacher]'";
         $result = mysqli_query($connection, $query);
     }
     ?>
-	<title>Schedule - Add Chair</title>
+	<title>Schedule - Add Teacher</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
@@ -58,8 +64,8 @@
 		<div class="container-login100">
 			<div class="wrap-login100 p-t-50 p-b-90">
 				<form class="login100-form validate-form flex-sb flex-w" method="post">
-					<span class="login100-form-title p-b-51">
-                        Add Chair
+					<span class="login100-form-title p-b-51"> 
+                        Add Teacher 
                         <br>
                         <?php
                         if(isset($message)) {
@@ -71,24 +77,70 @@
                             }
                         }
                         ?>
-					</span>
-
-					<div class="wrap-input100 validate-input m-b-16" data-validate = "Chair name is required">
-						<input class="input100" type="text" name="name" placeholder="Chair name">
+                    </span>
+                    
+                    <div class="wrap-input100 validate-input m-b-16" data-validate = "Sure Name is required">
+						<input class="input100" type="text" name="surName" placeholder="Teacher surname">
 						<span class="focus-input100"></span>
 					</div>
-
+                    
+                    <div class="wrap-input100 validate-input m-b-16" data-validate = "Name is required">
+						<input class="input100" type="text" name="name" placeholder="Teacher name">
+						<span class="focus-input100"></span>
+					</div>
+                    
+                    <div class="wrap-input100 validate-input m-b-16" data-validate = "Middle name is required">
+						<input class="input100" type="text" name="middleName" placeholder="Teacher middle name">
+						<span class="focus-input100"></span>
+					</div>
+                    <div class="wrap-input100 validate-input m-b-16" data-validate = "Chair is required">
+						<select class="input100" type="text" name="chairId"> 
+                            <option selected disabled value = "NULL">Select chair</option>
+                            <?php
+                            $queryy = "SELECT * FROM chair";
+                            if ($result = $connection->query($queryy)) {
+                                while ($row = $result->fetch_assoc()) {
+                                    echo('<option value = "'.$row['id'].'"> '.$row['shortName'].' </option>');
+                                }
+                            }
+                            ?>
+                        </select>
+						<span class="focus-input100"></span>
+					</div>
+                    
 					<div class="container-login100-form-btn m-t-17">
 						<button class="login100-form-btn">
 							Add
 						</button>
 					</div>
-                    <div class="container-login100-form-btn m-t-17">
-                        <a class="login100-form-btn" href = "adminPage">Back</a>
-                    </div>
 				</form>
+                <div class="container-login100-form-btn m-t-17">
+                    <a class="login100-form-btn" href = "adminPage">Back</a>
+                </div>
 			</div>
 		</div>
+        <span class="login100-form-title p-b-51"> Teachers list </span>
+        <div class="wrap-input100 validate-input m-b-16" data-validate = "Chair is required">
+            <form method = "post">
+            <select class="input100" type="text" name="showTeacher"> 
+                <option selected disabled value = "NULL">Select chair</option>
+                <?php
+                $queryy = "SELECT * FROM chair";
+                if ($result = $connection->query($queryy)) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo('<option value = "'.$row['id'].'"> '.$row['shortName'].' </option>');
+                    }
+                }
+                ?>
+            </select>
+            <span class="focus-input100"></span>
+            <div class="container-login100-form-btn m-t-17">
+                <button class="login100-form-btn">
+				    Show
+				</button>
+            </div>
+            </form>
+        </div>
 	</div>
     <div class="row">
         <div class="col-sm-12">
@@ -103,29 +155,42 @@
                     </th>
                     <th>
                     </th>
+                    <th>
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
                 <?php 
-                    $queryy = "SELECT * FROM chair";
-                    if ($result = $connection->query($queryy)) {
-                    while ($row = $result->fetch_assoc()) {
+                    if (isset($_POST['showTeacher'])) {
+                        $queryy = "SELECT * FROM teacher WHERE chairId = '$_POST[showTeacher]'";
+                        if ($result = $connection->query($queryy)) {
+                        while ($row = $result->fetch_assoc()) {
                 ?>
                 <tr>
                     <td> <?php echo($row['id']); ?> </td>
-                    <td> <?php echo($row['name']);?> </td>
+                    <td> <?php echo($row['surName']. " " . $row['name'] . " " . $row['middleName']); ?> </td>
                     <td> 
                         <form action = "" method="post">
                             <?php
-                                echo('<input type = "hidden" name = "id" value = "'.$row['id'].'">');
+                                echo('<input type = "hidden" name = "deleteTeacher" value = "'.$row['id'].'">');
                             ?>
                             <button>
                                 Delete
                             </button>
                         </form>
                     </td>
+                    <td>
+                        <form action = "updateTeacher" method="get">
+                            <?php
+                                echo('<input type = "hidden" name = "updateTeacher" value = "'.$row['id'].'">');
+                            ?>
+                            <button>
+                                Update
+                            </button>
+                        </form>
+                    </td>
                 </tr>
-                    <?php }} ?>
+                    <?php }}} ?>
                 </tbody>
             </table>
         </div>

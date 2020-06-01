@@ -11,10 +11,10 @@
         echo mysqli_connect_error();
         exit();
     }
-    if (isset($_POST['name'])) {
-        mysqli_query($connection, "SELECT name FROM chair WHERE name = '$_POST[name]'");
+    if (isset($_POST['name']) && $_POST['course'] && isset($_POST['specialtyId'])) {
+        mysqli_query($connection, "SELECT name FROM groups WHERE name = '$_POST[name]'");
         if (mysqli_affected_rows($connection)< 1) {
-            $query ="INSERT INTO chair VALUES(NULL, '$_POST[name]')";
+            $query ="INSERT INTO groups VALUES(NULL, '$_POST[name]', '$_POST[course]', '$_POST[specialtyId]')";
             $result = mysqli_query($connection, $query);
             $message = true;
         }
@@ -22,12 +22,12 @@
             $message = false;
         }
     }
-    if (isset($_POST['id'])) {
-        $query ="DELETE FROM chair WHERE id = '$_POST[id]'";
+    if (isset($_POST['deleteGroup'])) {
+        $query ="DELETE FROM groups WHERE id = '$_POST[deleteGroup]'";
         $result = mysqli_query($connection, $query);
     }
     ?>
-	<title>Schedule - Add Chair</title>
+	<title>Schedule - Add Group</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
@@ -59,7 +59,7 @@
 			<div class="wrap-login100 p-t-50 p-b-90">
 				<form class="login100-form validate-form flex-sb flex-w" method="post">
 					<span class="login100-form-title p-b-51">
-                        Add Chair
+                        Add Group
                         <br>
                         <?php
                         if(isset($message)) {
@@ -73,11 +73,34 @@
                         ?>
 					</span>
 
-					<div class="wrap-input100 validate-input m-b-16" data-validate = "Chair name is required">
-						<input class="input100" type="text" name="name" placeholder="Chair name">
+					<div class="wrap-input100 validate-input m-b-16" data-validate = "Group name is required">
+						<input class="input100" type="text" name="name" placeholder="Group name">
 						<span class="focus-input100"></span>
 					</div>
-
+                    <div class="wrap-input100 validate-input m-b-16" data-validate = "Course is required">
+						<select class="input100" type="text" name="course" placeholder="Course name">
+                            <option selected disabled value = "NULL">Select course</option>
+                            <option value = "1">1</option>
+                            <option value = "2">2</option>
+                            <option value = "3">3</option>
+                            <option value = "4">4</option>
+                        </select>
+						<span class="focus-input100"></span>
+					</div>
+                    <div class="wrap-input100 validate-input m-b-16" data-validate = "Specialty is required">
+						<select class="input100" type="text" name="specialtyId"> 
+                            <option selected disabled value = "NULL">Select specialty</option>
+                            <?php
+                            $queryy = "SELECT * FROM specialty";
+                            if ($result = $connection->query($queryy)) {
+                                while ($row = $result->fetch_assoc()) {
+                                    echo('<option value = "'.$row['id'].'"> '.$row['name'].' </option>');
+                                }
+                            }
+                            ?>
+                        </select>
+						<span class="focus-input100"></span>
+					</div>
 					<div class="container-login100-form-btn m-t-17">
 						<button class="login100-form-btn">
 							Add
@@ -89,6 +112,28 @@
 				</form>
 			</div>
 		</div>
+        <span class="login100-form-title p-b-51"> Group list </span>
+        <div class="wrap-input100 validate-input m-b-16" data-validate = "Specialty name is required">
+            <form method = "post">
+            <select class="input100" type="text" name="showGroup"> 
+                <option selected disabled value = "NULL">Select specialty</option>
+                <?php
+                $queryy = "SELECT * FROM specialty";
+                if ($result = $connection->query($queryy)) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo('<option value = "'.$row['id'].'"> '.$row['name'].' </option>');
+                    }
+                }
+                ?>
+            </select>
+            <span class="focus-input100"></span>
+            <div class="container-login100-form-btn m-t-17">
+                <button class="login100-form-btn">
+				    Show
+				</button>
+            </div>
+            </form>
+        </div>
 	</div>
     <div class="row">
         <div class="col-sm-12">
@@ -102,22 +147,27 @@
                         Name
                     </th>
                     <th>
+                        Course
+                    </th>
+                    <th>
                     </th>
                 </tr>
                 </thead>
                 <tbody>
                 <?php 
-                    $queryy = "SELECT * FROM chair";
-                    if ($result = $connection->query($queryy)) {
-                    while ($row = $result->fetch_assoc()) {
+                    if (isset($_POST['showGroup'])) {
+                        $queryy = "SELECT * FROM groups WHERE specialtyId = '$_POST[showGroup]'";
+                        if ($result = $connection->query($queryy)) {
+                        while ($row = $result->fetch_assoc()) {
                 ?>
                 <tr>
                     <td> <?php echo($row['id']); ?> </td>
-                    <td> <?php echo($row['name']);?> </td>
+                    <td> <?php echo($row['name']); ?> </td>
+                    <td> <?php echo($row['course']); ?> </td>
                     <td> 
                         <form action = "" method="post">
                             <?php
-                                echo('<input type = "hidden" name = "id" value = "'.$row['id'].'">');
+                                echo('<input type = "hidden" name = "deleteGroup" value = "'.$row['id'].'">');
                             ?>
                             <button>
                                 Delete
@@ -125,7 +175,7 @@
                         </form>
                     </td>
                 </tr>
-                    <?php }} ?>
+                    <?php }}} ?>
                 </tbody>
             </table>
         </div>

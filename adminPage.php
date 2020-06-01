@@ -48,9 +48,11 @@
             }
         ?>
 		<ul>
-  		<li><a href="#">Add Schedule</a></li>
-  		<li><a href="#">Add Teacher</a></li>
-  		<li><a href="#">Add Group</a></li>
+  		<li><a href="addSchedule">Add Schedule</a></li>
+        <li><a href="addSubject">Add Subject</a></li>
+        <li><a href="addGroup">Add Group</a></li>
+        <li><a href="addSpecialty">Add Specialty</a></li>
+        <li><a href="addTeacher">Add Teacher</a></li>
   		<li><a href="addChair">Add Chair</a></li>
         <li><a href="logoutScript">Log out</a></li>
 		</ul>
